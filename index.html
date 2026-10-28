@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<title>Absensi Guru</title>
+</head>
+<body>
+<style>
+#absensiApp{--ink:#0f172a;--mut:#64748b;--line:rgba(15,23,42,.09);--pri:#2563eb;--pri2:#4f46e5;--ok:#15803d;--okb:#dcfce7;--warn:#b45309;--warnb:#fef3c7;--err:#b91c1c;--errb:#fee2e2;--info:#1d4ed8;--infob:#dbeafe;--r:16px;
+position:fixed;inset:0;z-index:99990;overflow:auto;background:#fff;color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;-webkit-text-size-adjust:100%}
+#absensiApp *{box-sizing:border-box}
+#absensiApp h1,#absensiApp h2,#absensiApp h3,#absensiApp p{margin:0}
+#absensiApp [hidden]{display:none!important}
+#absensiApp svg.ic{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bgfx{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(620px 420px at 8% -8%,rgba(37,99,235,.12),transparent 62%),radial-gradient(520px 380px at 100% 0,rgba(79,70,229,.09),transparent 62%),radial-gradient(560px 420px at 50% 112%,rgba(14,165,233,.09),transparent 62%)}
+#root{position:relative;z-index:1;min-height:100%}
+.glass{background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);border:1px solid var(--line)}
+.card{background:rgba(255,255,255,.75);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 6px 24px -12px rgba(15,23,42,.18);margin-bottom:14px}
+.pad{padding:16px}
+.mut{color:var(--mut)}.sm{font-size:13px}.center{text-align:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 16px;border-radius:12px;font:inherit;font-weight:600;cursor:pointer;transition:.15s;text-decoration:none}
+.btn:hover{background:#f8fafc}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.pri{background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff;border-color:transparent;box-shadow:0 8px 20px -8px rgba(37,99,235,.6)}
+.btn.pri:hover{filter:brightness(1.06)}
+.btn.danger{color:var(--err);background:#fff5f5;border-color:#fecaca}
+.btn.ok{background:var(--okb);color:var(--ok);border-color:#bbf7d0}
+.btn.s{padding:6px 12px;font-size:13px;border-radius:10px}
+.btn.block{width:100%}.btn.lg{padding:14px 18px;font-size:16px}
+.inp{width:100%;padding:11px 13px;border:1px solid rgba(15,23,42,.15);border-radius:12px;font:inherit;background:rgba(255,255,255,.9);color:var(--ink);outline:none}
+.inp:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+textarea.inp{resize:vertical;min-height:84px}
+label.f{display:block;font-size:13px;font-weight:600;margin:12px 0 6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pw{position:relative}.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;color:var(--mut);cursor:pointer;padding:6px}
+.chip{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.chip.ok{background:var(--okb);color:var(--ok)}.chip.warn{background:var(--warnb);color:var(--warn)}.chip.err{background:var(--errb);color:var(--err)}.chip.info{background:var(--infob);color:var(--info)}.chip.mut{background:#f1f5f9;color:var(--mut)}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:100%;max-width:410px;padding:28px 24px}
+.brand{text-align:center;margin-bottom:18px}.brand h1{font-size:21px;margin-top:10px}.brand p{color:var(--mut);font-size:13px}
+.logo{width:84px;height:84px;object-fit:contain;border-radius:18px}
+.logo.ph{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--pri),var(--pri2));color:#fff}
+.logo.ph svg{width:44%;height:44%}
+.seg{display:flex;background:#f1f5f9;border-radius:12px;padding:4px;margin-bottom:6px}
+.seg button{flex:1;border:0;background:none;padding:9px;border-radius:9px;font:inherit;font-weight:600;color:var(--mut);cursor:pointer}
+.seg button.on{background:#fff;color:var(--pri);box-shadow:0 2px 8px rgba(15,23,42,.1)}
+.pvbox{margin-top:16px;padding:12px;border-radius:12px;background:var(--warnb);color:#78350f;font-size:12.5px}
+.pvtag{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:100001;background:var(--warn);color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:999px;letter-spacing:.04em}
+.shell{min-height:100vh}
+.side{display:none}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:10px 16px;border-width:0 0 1px}
+.top .logo{width:36px;height:36px;border-radius:10px}
+.top .t{flex:1;min-width:0}.top .t b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.top .t span{font-size:12px;color:var(--mut)}
+.icon-btn{border:0;background:none;color:var(--mut);padding:8px;border-radius:10px;cursor:pointer;display:inline-flex}.icon-btn:hover{background:#f1f5f9}
+#view{padding:16px 16px 110px;max-width:980px;margin:0 auto}
+.bottom{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:30;display:flex;justify-content:space-around;padding:6px;border-radius:20px;box-shadow:0 12px 32px -10px rgba(15,23,42,.35)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;color:var(--mut);font:inherit;font-size:11px;font-weight:600;padding:7px 2px;border-radius:14px;cursor:pointer}
+.nb.on{color:var(--pri);background:rgba(37,99,235,.1)}
+@media(min-width:900px){
+ .side{display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;width:248px;padding:18px 14px;z-index:25;border-width:0 1px 0 0}
+ .side .sb{display:flex;align-items:center;gap:10px;padding:4px 6px 18px}.side .sb .logo{width:42px;height:42px;border-radius:12px}.side .sb b{font-size:15px;line-height:1.2}
+ .side .nb{flex:none;flex-direction:row;gap:12px;font-size:14px;padding:11px 14px;justify-content:flex-start;margin-bottom:4px}
+ .side .sp{flex:1}
+ .main{margin-left:248px}.bottom{display:none}#view{padding-bottom:40px}
+ .top .logo{display:none}
+}
+.ph-h{margin:4px 0 16px}.ph-h h2{font-size:22px}.ph-h p{color:var(--mut);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{padding:14px}.stat b{display:block;font-size:26px;line-height:1.1}.stat span{font-size:12.5px;color:var(--mut)}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);cursor:default}
+.row:last-child{border-bottom:0}.row.tap{cursor:pointer}.row.tap:hover{background:rgba(37,99,235,.04)}
+.row .g{flex:1;min-width:0}.row .g b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .g span{font-size:12.5px;color:var(--mut)}
+.row .r{text-align:right;display:flex;flex-direction:column;gap:4px;align-items:flex-end;font-size:12.5px}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#dbeafe,#e0e7ff);color:var(--pri);display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.thumb{width:44px;height:44px;border-radius:10px;object-fit:cover;background:#f1f5f9;flex:none}
+.empty{text-align:center;color:var(--mut);padding:36px 16px}.empty svg{width:34px;height:34px;opacity:.5;margin-bottom:6px}
+.clock{font-size:38px;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.camwrap{position:relative;background:#0f172a;border-radius:14px;overflow:hidden;aspect-ratio:3/4;max-width:340px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+.camwrap video,.camwrap img{width:100%;height:100%;object-fit:cover}.camwrap video{transform:scaleX(-1)}
+.camph{position:absolute;color:#94a3b8;text-align:center;font-size:13px}.camph svg{width:42px;height:42px}
+.loc{display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:#f8fafc;margin-bottom:10px}
+.loc.ok{background:var(--okb)}.loc.bad{background:var(--errb)}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow:auto}
+.tabs button{border:1px solid var(--line);background:#fff;padding:8px 16px;border-radius:999px;font:inherit;font-weight:600;color:var(--mut);cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.days{display:flex;flex-wrap:wrap;gap:8px}.days label{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;background:#fff}
+.map{height:320px;border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:12px 0;position:relative;z-index:0;isolation:isolate}
+.logoprev{display:flex;align-items:center;gap:14px;padding:12px;border:1px dashed rgba(15,23,42,.2);border-radius:14px;margin-bottom:10px}
+.modal-bg{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.45);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center}
+.modal{background:#fff;width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(15,23,42,.25);animation:up .2s ease}
+.modal.wide{max-width:760px}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+.modal-h h3{font-size:17px}.modal-b{padding:16px}
+@media(min-width:700px){.modal-bg{align-items:center}.modal{border-radius:22px}}
+@keyframes up{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+#toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:100002;display:flex;flex-direction:column;gap:8px;width:min(92vw,420px)}
+.toast{padding:11px 16px;border-radius:12px;color:#fff;font-weight:600;font-size:14px;box-shadow:0 10px 30px -8px rgba(0,0,0,.4);transition:.4s;background:#0f172a}
+.toast.ok{background:#15803d}.toast.err{background:#b91c1c}.toast.out{opacity:0;transform:translateY(-8px)}
+.busy{position:fixed;inset:0;z-index:100003;background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center}
+.spin{width:38px;height:38px;border:4px solid #dbeafe;border-top-color:var(--pri);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.notice{display:flex;gap:10px;padding:14px;border-radius:14px;background:var(--warnb);color:#78350f;margin-bottom:14px}
+.notice.info{background:var(--infob);color:#1e3a8a}.notice.ok{background:var(--okb);color:#14532d}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:10px}.photos img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;background:#f1f5f9}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:13.5px;margin:8px 0}.kv span:nth-child(odd){color:var(--mut)}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
+@media(min-width:700px){.filters{grid-template-columns:repeat(4,1fr) auto}}
+.leaflet-container{font:inherit}
+</style>
+
+<div id="absensiApp">
+  <div class="bgfx"></div>
+  <div id="root"></div>
+  <div id="toasts"></div>
+  <div class="busy" id="busy" hidden><div class="spin"></div></div>
+</div>
+
+<script type="module">
+// KONFIGURASI APLIKASI
+const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY / PUBLISH agar terhubung murni ke Firebase tanpa data dummy
+
+// PASTE FIREBASE CONFIG ANDA DI SINI
+const firebaseConfig = {
+  apiKey: "AIzaSyAyeLTVbOUos4qDpok2Emly3gW0LiekgDw",
+  authDomain: "absen-guru-281027.firebaseapp.com",
+  projectId: "absen-guru-281027",
+  storageBucket: "absen-guru-281027.firebasestorage.app",
+  messagingSenderId: "640974422228",
+  appId: "1:640974422228:web:a2edf1e3ed9b45814a3b41"
+};
+
+const FB = 'https://www.gstatic.com/firebasejs/10.14.1/';
+
+/* =========================================================
+   UTILITAS
+========================================================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const hm = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+const toMin = t => { const [h, m] = String(t || '0:0').split(':').map(Number); return (h || 0) * 60 + (m || 0); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+const fmtTanggal = s => { const [y, m, d] = s.split('-').map(Number); return `${HARI[new Date(y, m - 1, d).getDay()]}, ${d} ${BULAN[m - 1]} ${y}`; };
+const fmtPendek = s => { const [y, m, d] = s.split('-').map(Number); return `${d} ${BULAN[m - 1].slice(0, 3)} ${y}`; };
+const clone = o => JSON.parse(JSON.stringify(o));
+const initials = n => String(n || '?').replace(/[^A-Za-z ]/g, '').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+const jarakM = (a, b, c, d) => { const R = 6371000, t = x => x * Math.PI / 180, dl = t(c - a), dg = t(d - b); const q = Math.sin(dl / 2) ** 2 + Math.cos(t(a)) * Math.cos(t(c)) * Math.sin(dg / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(q)); };
+const fmtJarak = m => m >= 1000 ? (m / 1000).toFixed(2) + ' km' : Math.round(m) + ' m';
+const mapsUrl = (lat, lng) => `https://www.google.com/maps?q=${lat},${lng}`;
+
+async function hashPass(u, p) {
+  if (!(window.crypto && crypto.subtle)) throw new Error('Browser tidak mendukung enkripsi. Buka aplikasi lewat HTTPS.');
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${u}::${p}::absensi-guru-v1`));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+const IC = {
+  home: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
+  pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  file: '<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  sliders: '<line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  x: '<line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+  plus: '<line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+  building: '<rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>',
+  dash: '<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+  list: '<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
+  gps: '<circle cx="12" cy="12" r="10"/><line x1="22" x2="18" y1="12" y2="12"/><line x1="6" x2="2" y1="12" y2="12"/><line x1="12" x2="12" y1="6" y2="2"/><line x1="12" x2="12" y1="22" y2="18"/>',
+  refresh: '<path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>',
+  eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  image: '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
+  alert: '<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>'
+};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${IC[n] || ''}</svg>`;
+
+const CHIP = { 'Tepat Waktu': 'ok', 'Terlambat': 'warn', 'Pulang Cepat': 'warn', 'Tidak Absen': 'err', 'Menunggu': 'warn', 'Disetujui': 'ok', 'Ditolak': 'err', 'Izin': 'info', 'Sakit': 'info', 'Cuti': 'info', 'Dinas Luar': 'info', 'Lainnya': 'info' };
+const chip = t => `<span class="chip ${CHIP[t] || 'mut'}">${esc(t)}</span>`;
+
+function toast(msg, type = 'ok') {
+  const t = document.createElement('div'); t.className = 'toast ' + type; t.textContent = msg; $('#toasts').appendChild(t);
+  setTimeout(() => t.classList.add('out'), 2800); setTimeout(() => t.remove(), 3300);
+}
+let busyN = 0;
+function busy(on) { busyN = Math.max(0, busyN + (on ? 1 : -1)); $('#busy').hidden = busyN === 0; }
+function modal(title, body, wide = false) {
+  closeModal();
+  const m = document.createElement('div'); m.className = 'modal-bg'; m.id = 'modal';
+  m.innerHTML = `<div class="modal ${wide ? 'wide' : ''}"><div class="modal-h"><h3>${esc(title)}</h3><button class="icon-btn" data-act="closeModal" aria-label="Tutup">${ic('x')}</button></div><div class="modal-b">${body}</div></div>`;
+  $('#absensiApp').appendChild(m);
+}
+function closeModal() { $('#modal')?.remove(); }
+function confirmBox(msg, okLabel = 'Ya, lanjutkan') {
+  return new Promise(res => {
+    modal('Konfirmasi', `<p>${esc(msg)}</p><div class="grid2" style="margin-top:16px"><button class="btn" id="cfNo">Batal</button><button class="btn danger" id="cfYes">${esc(okLabel)}</button></div>`);
+    $('#cfNo').onclick = () => { closeModal(); res(false); };
+    $('#cfYes').onclick = () => { closeModal(); res(true); };
+  });
+}
+const loading = () => '<div class="empty"><div class="spin" style="margin:0 auto 10px"></div>Memuat…</div>';
+const emptyBox = (t, i = 'list') => `<div class="empty">${ic(i)}<div>${esc(t)}</div></div>`;
+const notice = (t, k = '') => `<div class="notice ${k}">${ic('alert')}<div>${t}</div></div>`;
+const head = (t, s = '') => `<div class="ph-h"><h2>${esc(t)}</h2>${s ? `<p>${esc(s)}</p>` : ''}</div>`;
+const errMsg = e => (e && (e.code === 'permission-denied' || /permission/i.test(e.message || ''))) ? 'Akses ditolak oleh Firestore. Periksa Security Rules.' : (e?.message || 'Terjadi kesalahan.');
+const logoHtml = (size = 84) => S.sekolah.logo ? `<img class="logo" style="width:${size}px;height:${size}px" src="${esc(S.sekolah.logo)}" alt="Logo">` : `<span class="logo ph" style="width:${size}px;height:${size}px">${ic('building')}</span>`;
+
+function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+async function compressFile(file, max, q, png) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await loadImg(url);
+    const sc = Math.min(1, max / Math.max(img.width, img.height));
+    const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * sc)); c.height = Math.max(1, Math.round(img.height * sc));
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    let out = png ? c.toDataURL('image/png') : c.toDataURL('image/jpeg', q);
+    if (png && out.length > 180000) out = c.toDataURL('image/jpeg', q);
+    return out;
+  } finally { URL.revokeObjectURL(url); }
+}
+function download(name, text, type = 'text/csv;charset=utf-8') {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\uFEFF' + text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+const defaultCfg = () => ({ jamMasukMulai: '06:00', jamMasukBatas: '07:15', toleransiMenit: 0, jamPulangMulai: '14:30', jamPulangAkhir: '18:00', hariKerja: [1, 2, 3, 4, 5], lat: -6.175392, lng: 106.827153, radius: 100, namaLokasi: 'Lokasi Sekolah' });
+const cfgOrDefault = () => ({ ...defaultCfg(), ...(S.cfg || {}) });
+const srvDate = v => v && typeof v.toDate === 'function' ? v.toDate() : (v instanceof Date ? v : null);
+
+/* =========================================================
+   LAPISAN DATA
+   - Preview  : memori sementara (tanpa Firebase)
+   - Produksi : Firebase Auth (admin) + Firestore langsung
+========================================================= */
+let DB = null;
+
+async function createMemDB() {
+  const st = { sekolah: { nama: 'SMA Negeri Demo', logo: '' }, cfg: { ...defaultCfg(), namaLokasi: 'Gedung Sekolah Demo' }, users: {}, absensi: {}, izin: {} };
+  const [h1, h2] = await Promise.all([hashPass('guru1', 'guru123'), hashPass('guru2', 'guru123')]);
+  const created = ymd(addDays(new Date(), -30));
+  st.users.guru1 = { username: 'guru1', nama: 'Budi Santoso, S.Pd', nip: '198001012005011001', passHash: h1, aktif: true, role: 'guru', createdAt: created };
+  st.users.guru2 = { username: 'guru2', nama: 'Siti Aminah, M.Pd', nip: '198505052010012002', passHash: h2, aktif: true, role: 'guru', createdAt: created };
+  const y = ymd(addDays(new Date(), -1));
+  const ph = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="320"><rect width="240" height="320" fill="#e2e8f0"/><circle cx="120" cy="125" r="48" fill="#94a3b8"/><rect x="50" y="190" width="140" height="130" rx="60" fill="#94a3b8"/></svg>');
+  st.absensi[`${y}_guru1`] = { username: 'guru1', nama: 'Budi Santoso, S.Pd', tanggal: y,
+    masuk: { waktu: '06:55', iso: new Date(y + 'T06:55:00').toISOString(), lat: st.cfg.lat, lng: st.cfg.lng, jarak: 12, akurasi: 8, status: 'Tepat Waktu', terlambatMenit: 0, foto: ph },
+    pulang: { waktu: '15:05', iso: new Date(y + 'T15:05:00').toISOString(), lat: st.cfg.lat, lng: st.cfg.lng, jarak: 15, akurasi: 9, status: 'Tepat Waktu', foto: ph } };
+  const t = ymd(new Date());
+  st.izin.guru2 = [{ id: String(Date.now()), username: 'guru2', nama: 'Siti Aminah, M.Pd', jenis: 'Sakit', tglMulai: t, tglSelesai: ymd(addDays(new Date(), 1)), alasan: 'Demam dan flu, istirahat sesuai anjuran dokter.', lampiran: '', status: 'Menunggu', catatan: '', createdAt: new Date().toISOString() }];
+  let cb = null;
+  const stateAdmin = { email: null };
+  return {
+    auth: {
+      login: async (e, p) => { if (e.trim().toLowerCase() !== 'admin@demo.com' || p !== 'admin123') { const er = new Error('Email atau password salah.'); throw er; } stateAdmin.email = e.trim(); cb && cb(stateAdmin.email); return stateAdmin.email; },
+      logout: async () => { stateAdmin.email = null; cb && cb(null); },
+      onChange: f => { cb = f; f(null); }
+    },
+    getSekolah: async () => clone(st.sekolah), saveSekolah: async d => { st.sekolah = clone(d); },
+    getCfg: async () => clone(st.cfg), saveCfg: async d => { st.cfg = clone(d); },
+    getUser: async u => st.users[u] ? clone(st.users[u]) : null,
+    listUsers: async () => Object.values(st.users).map(clone),
+    saveUser: async (u, d) => { st.users[u] = { ...(st.users[u] || {}), ...clone(d) }; },
+    deleteUser: async u => { delete st.users[u]; delete st.izin[u]; },
+    changePass: async (u, nh, oh) => { if (st.users[u].passHash !== oh) throw new Error('Password lama salah.'); st.users[u].passHash = nh; },
+    getAbsensi: async id => st.absensi[id] ? clone(st.absensi[id]) : null,
+    createAbsensi: async (id, d) => { if (st.absensi[id]) throw new Error('Sudah absen masuk.'); st.absensi[id] = { ...clone(d), waktuServer: new Date() }; },
+    updateAbsensi: async (id, d) => { st.absensi[id] = { ...st.absensi[id], ...clone(d), pulangServer: new Date() }; },
+    listAbsensi: async (from, to) => Object.entries(st.absensi).filter(([, a]) => a.tanggal >= from && a.tanggal <= to).map(([id, a]) => ({ ...clone(a), id })),
+    listIzinUser: async u => clone(st.izin[u] || []),
+    addIzin: async (u, id, d) => { (st.izin[u] = st.izin[u] || []).push({ ...clone(d), id }); },
+    cancelIzin: async (u, id) => { st.izin[u] = (st.izin[u] || []).filter(i => i.id !== id); },
+    listIzinAll: async () => Object.values(st.izin).flat().map(clone),
+    setIzinStatus: async (u, id, status, catatan) => { const i = (st.izin[u] || []).find(x => x.id === id); if (i) { i.status = status; i.catatan = catatan; } }
+  };
+}
+
+async function createFsDB() {
+  const [{ initializeApp }, A, F] = await Promise.all([import(FB + 'firebase-app.js'), import(FB + 'firebase-auth.js'), import(FB + 'firebase-firestore.js')]);
+  const app = initializeApp(firebaseConfig), auth = A.getAuth(app), db = F.getFirestore(app);
+  const dd = s => s.exists() ? s.data() : null;
+  const lst = async q => (await F.getDocs(q)).docs.map(x => ({ ...x.data(), id: x.id }));
+  return {
+    auth: {
+      login: async (e, p) => (await A.signInWithEmailAndPassword(auth, e.trim(), p)).user.email,
+      logout: () => A.signOut(auth),
+      onChange: cb => A.onAuthStateChanged(auth, u => cb(u ? u.email : null))
+    },
+    getSekolah: async () => dd(await F.getDoc(F.doc(db, 'settings', 'sekolah'))),
+    saveSekolah: d => F.setDoc(F.doc(db, 'settings', 'sekolah'), d),
+    getCfg: async () => dd(await F.getDoc(F.doc(db, 'settings', 'absensi'))),
+    saveCfg: d => F.setDoc(F.doc(db, 'settings', 'absensi'), d),
+    getUser: async u => dd(await F.getDoc(F.doc(db, 'users', u))),
+    listUsers: async () => (await F.getDocs(F.collection(db, 'users'))).docs.map(x => x.data()),
+    saveUser: (u, d) => F.setDoc(F.doc(db, 'users', u), d, { merge: true }),
+    deleteUser: u => F.deleteDoc(F.doc(db, 'users', u)),
+    changePass: (u, nh, oh) => F.updateDoc(F.doc(db, 'users', u), { passHash: nh, proof: oh }),
+    getAbsensi: async id => dd(await F.getDoc(F.doc(db, 'absensi', id))),
+    createAbsensi: (id, d) => F.setDoc(F.doc(db, 'absensi', id), { ...d, waktuServer: F.serverTimestamp() }),
+    updateAbsensi: (id, d) => F.updateDoc(F.doc(db, 'absensi', id), { ...d, pulangServer: F.serverTimestamp() }),
+    listAbsensi: (from, to) => lst(F.query(F.collection(db, 'absensi'), F.where('tanggal', '>=', from), F.where('tanggal', '<=', to))),
+    listIzinUser: u => lst(F.collection(db, 'users', u, 'izin')),
+    addIzin: (u, id, d) => F.setDoc(F.doc(db, 'users', u, 'izin', id), { ...d, ts: F.serverTimestamp() }),
+    cancelIzin: (u, id) => F.deleteDoc(F.doc(db, 'users', u, 'izin', id)),
+    listIzinAll: () => lst(F.collectionGroup(db, 'izin')),
+    setIzinStatus: (u, id, status, catatan) => F.updateDoc(F.doc(db, 'users', u, 'izin', id), { status, catatan })
+  };
+}
+
+/* =========================================================
+   STATE, SHELL & NAVIGASI
+========================================================= */
+const S = { role: null, user: null, page: null, sekolah: { nama: '', logo: '' }, cfg: null, setTab: 'jam', rekap: null, izinFilter: 'Menunggu', riwMonth: null };
+const PAGES = { guru: {}, admin: {} };
+const actions = {}, forms = {}, changes = {};
+let cleanups = [];
+const onLeave = f => cleanups.push(f);
+const root = $('#root');
+
+const GURU_NAV = [['home', 'Beranda', 'home'], ['absen', 'Absen', 'camera'], ['izin', 'Izin', 'file'], ['riwayat', 'Riwayat', 'clock'], ['profil', 'Profil', 'user']];
+const ADMIN_NAV = [['dash', 'Dashboard', 'dash'], ['rekap', 'Rekap', 'list'], ['izin', 'Izin', 'file'], ['guru', 'Guru', 'users'], ['setting', 'Pengaturan', 'sliders']];
+
+function applyTitle() { document.title = S.sekolah.nama ? `Absensi Guru - ${S.sekolah.nama}` : 'Absensi Guru'; }
+
+function renderShell() {
+  const nav = S.role === 'admin' ? ADMIN_NAV : GURU_NAV;
+  const btn = (n, cls) => `<button class="nb ${cls || ''}" data-act="nav" data-p="${n[0]}">${ic(n[2])}<span>${n[1]}</span></button>`;
+  const nama = S.role === 'admin' ? 'Administrator' : S.user.nama;
+  root.innerHTML = `${IS_PREVIEW ? '<div class="pvtag">MODE PREVIEW</div>' : ''}
+  <div class="shell">
+    <aside class="side glass">
+      <div class="sb">${logoHtml(42)}<b>${esc(S.sekolah.nama || 'Absensi Guru')}</b></div>
+      ${nav.map(n => btn(n)).join('')}
+      <div class="sp"></div>
+      <div class="sm mut" style="padding:8px 6px">${esc(nama)}<br>${S.role === 'admin' ? esc(S.user.email || '') : esc(S.user.username)}</div>
+      <button class="nb" data-act="logout">${ic('logout')}<span>Keluar</span></button>
+    </aside>
+    <div class="main">
+      <header class="top glass">${logoHtml(36)}<div class="t"><b>${esc(S.sekolah.nama || 'Absensi Guru')}</b><span>${esc(nama)} · ${S.role === 'admin' ? 'Admin' : 'Guru'}</span></div><button class="icon-btn" data-act="logout" aria-label="Keluar">${ic('logout')}</button></header>
+      <main id="view"></main>
+    </div>
+    <nav class="bottom glass">${nav.map(n => btn(n)).join('')}</nav>
+  </div>`;
+}
+
+function go(p) {
+  cleanups.forEach(f => { try { f(); } catch (e) { } }); cleanups = [];
+  S.page = p;
+  $$('[data-p]').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+  $('#absensiApp').scrollTop = 0;
+  Promise.resolve().then(() => PAGES[S.role][p]()).catch(e => {
+    console.error(e); const v = $('#view'); if (v) v.innerHTML = `<div class="card pad">${notice(esc(errMsg(e)))}<button class="btn" data-act="nav" data-p="${p}">${ic('refresh')} Coba lagi</button></div>`;
+  });
+}
+
+async function enterApp() {
+  busy(true);
+  try { S.cfg = await DB.getCfg(); } catch (e) { S.cfg = null; } finally { busy(false); }
+  renderShell(); go(S.role === 'admin' ? 'dash' : 'home');
+}
+
+document.addEventListener('click', e => {
+  if (e.target.id === 'modal') return closeModal();
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const fn = actions[t.dataset.act]; if (fn) { Promise.resolve(fn(t, e)).catch(er => { busy(false); toast(errMsg(er), 'err'); console.error(er); }); }
+});
+document.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-form]'); if (!f) return; e.preventDefault();
+  const fn = forms[f.dataset.form]; if (fn) Promise.resolve(fn(f)).catch(er => { busy(false); toast(errMsg(er), 'err'); console.error(er); });
+});
+document.addEventListener('change', e => {
+  const t = e.target.closest('[data-change]'); if (!t) return;
+  const fn = changes[t.dataset.change]; if (fn) Promise.resolve(fn(t, e)).catch(er => { busy(false); toast(errMsg(er), 'err'); });
+});
+
+actions.closeModal = closeModal;
+actions.nav = t => go(t.dataset.p);
+actions.logout = async () => {
+  if (!(await confirmBox('Keluar dari aplikasi?', 'Keluar'))) return;
+  stopCam();
+  if (S.role === 'admin') { await DB.auth.logout(); }
+  else { S.role = null; S.user = null; renderLogin(); }
+};
+actions.togglePw = t => { const i = t.parentElement.querySelector('input'); i.type = i.type === 'password' ? 'text' : 'password'; };
+
+/* =========================================================
+   LOGIN
+========================================================= */
+function renderLogin() {
+  stopCam();
+  root.innerHTML = `${IS_PREVIEW ? '<div class="pvtag">MODE PREVIEW</div>' : ''}
+  <div class="login-wrap"><div class="login-card card">
+    <div class="brand">${logoHtml(88)}<h1>${esc(S.sekolah.nama || 'Absensi Guru')}</h1><p>Absensi Guru Berbasis Lokasi &amp; Selfie</p></div>
+    <div class="seg"><button class="on" data-act="loginRole" data-r="guru">Guru</button><button data-act="loginRole" data-r="admin">Admin</button></div>
+    <form data-form="loginGuru" id="fGuru" autocomplete="on">
+      <label class="f">Username</label><input class="inp" name="username" autocomplete="username" autocapitalize="none" required>
+      <label class="f">Password</label><div class="pw"><input class="inp" name="password" type="password" autocomplete="current-password" required><button type="button" data-act="togglePw" aria-label="Tampilkan password">${ic('eye')}</button></div>
+      <button class="btn pri block lg" style="margin-top:18px">Masuk sebagai Guru</button>
+    </form>
+    <form data-form="loginAdmin" id="fAdmin" hidden>
+      <label class="f">Email Admin</label><input class="inp" name="email" type="email" autocomplete="username" required>
+      <label class="f">Password</label><div class="pw"><input class="inp" name="password" type="password" autocomplete="current-password" required><button type="button" data-act="togglePw" aria-label="Tampilkan password">${ic('eye')}</button></div>
+      <button class="btn pri block lg" style="margin-top:18px">Masuk sebagai Admin</button>
+    </form>
+    ${IS_PREVIEW ? `<div class="pvbox"><b>Mode Preview</b> — data hanya tersimpan di memori sementara dan hilang saat halaman dimuat ulang.<br><br>Admin: <b>admin@demo.com</b> / <b>admin123</b><br>Guru: <b>guru1</b> / <b>guru123</b></div>` : ''}
+  </div></div>`;
+}
+actions.loginRole = t => {
+  const a = t.dataset.r === 'admin';
+  $$('.seg button').forEach(b => b.classList.toggle('on', b === t));
+  $('#fGuru').hidden = a; $('#fAdmin').hidden = !a;
+};
+forms.loginGuru = async f => {
+  const u = f.username.value.trim().toLowerCase(), p = f.password.value;
+  busy(true);
+  try {
+    const user = await DB.getUser(u);
+    if (!user || user.passHash !== await hashPass(u, p)) throw new Error('Username atau password salah.');
+    if (user.aktif === false) throw new Error('Akun Anda dinonaktifkan. Hubungi admin.');
+    S.role = 'guru'; S.user = user;
+  } catch (e) { busy(false); toast(errMsg(e), 'err'); return; }
+  busy(false); await enterApp();
+};
+forms.loginAdmin = async f => {
+  busy(true);
+  try { await DB.auth.login(f.email.value, f.password.value); }
+  catch (e) { toast(/invalid|wrong|salah|user-not-found|credential/i.test((e.code || '') + (e.message || '')) ? 'Email atau password salah.' : errMsg(e), 'err'); }
+  finally { busy(false); }
+};
+
+/* =========================================================
+   KAMERA & LOKASI
+========================================================= */
+let stream = null;
+async function startCam() {
+  stopCam();
+  if (!navigator.mediaDevices?.getUserMedia) throw new Error('Kamera tidak didukung. Gunakan HTTPS dan browser terbaru.');
+  stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } }, audio: false });
+  const v = $('#cam'); v.srcObject = stream; await v.play();
+}
+function stopCam() { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } }
+function snapPhoto() {
+  const v = $('#cam'); if (!v.videoWidth) throw new Error('Kamera belum siap.');
+  const w = 480, h = Math.round(w * v.videoHeight / v.videoWidth);
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+  x.translate(w, 0); x.scale(-1, 1); x.drawImage(v, 0, 0, w, h); x.setTransform(1, 0, 0, 1, 0, 0);
+  const d = new Date(); x.fillStyle = 'rgba(0,0,0,.5)'; x.fillRect(0, h - 28, w, 28); x.fillStyle = '#fff'; x.font = '13px sans-serif';
+  x.fillText(`${S.user.nama} · ${ymd(d)} ${hm(d)}`, 8, h - 10);
+  return c.toDataURL('image/jpeg', 0.6);
+}
+function getPos() {
+  return new Promise((res, rej) => {
+    if (!navigator.geolocation) return rej(new Error('Perangkat tidak mendukung GPS.'));
+    navigator.geolocation.getCurrentPosition(p => res(p.coords), e => rej(new Error(e.code === 1 ? 'Izin lokasi ditolak. Aktifkan izin lokasi di pengaturan browser.' : e.code === 2 ? 'Lokasi tidak tersedia. Aktifkan GPS Anda.' : 'Pencarian lokasi melebihi batas waktu. Coba lagi.')), { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+  });
+}
+
+/* =========================================================
+   HELPER ABSENSI
+========================================================= */
+const izinOn = (list, ds) => (list || []).find(i => i.status === 'Disetujui' && i.tglMulai <= ds && ds <= i.tglSelesai);
+function windowState(mode, cfg, now = new Date()) {
+  const m = now.getHours() * 60 + now.getMinutes();
+  if (mode === 'masuk') {
+    if (m < toMin(cfg.jamMasukMulai)) return { open: false, msg: `Absen masuk dibuka pukul ${cfg.jamMasukMulai}.` };
+    if (m > toMin(cfg.jamPulangAkhir)) return { open: false, msg: `Absen ditutup pukul ${cfg.jamPulangAkhir}.` };
+    return { open: true, msg: `Batas tepat waktu pukul ${cfg.jamMasukBatas}${cfg.toleransiMenit ? ` (+${cfg.toleransiMenit} menit toleransi)` : ''}.` };
+  }
+  if (m > toMin(cfg.jamPulangAkhir)) return { open: false, msg: `Absen pulang ditutup pukul ${cfg.jamPulangAkhir}.` };
+  return { open: true, msg: m < toMin(cfg.jamPulangMulai) ? `Jam pulang resmi pukul ${cfg.jamPulangMulai}. Pulang sebelumnya tercatat "Pulang Cepat".` : 'Silakan absen pulang.' };
+}
+function absenLines(r) {
+  if (!r) return '<p class="mut sm">Belum ada data.</p>';
+  return `${r.foto ? `<img src="${esc(r.foto)}" alt="Selfie" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px">` : ''}
+  <div class="kv"><span>Waktu</span><span><b>${esc(r.waktu)}</b> ${chip(r.status)}</span><span>Jarak</span><span>${fmtJarak(r.jarak)} dari lokasi (akurasi ±${r.akurasi || 0} m)</span><span>Koordinat</span><span><a href="${mapsUrl(r.lat, r.lng)}" target="_blank" rel="noopener">${r.lat}, ${r.lng}</a></span>${r.terlambatMenit ? `<span>Terlambat</span><span>${r.terlambatMenit} menit</span>` : ''}</div>`;
+}
+function showAbsen(a) {
+  const sv = srvDate(a.waktuServer), dv = a.masuk?.iso ? new Date(a.masuk.iso) : null;
+  const warn = sv && dv && Math.abs(sv - dv) > 10 * 60000;
+  modal(`${a.nama} · ${fmtPendek(a.tanggal)}`, `${warn ? notice('Jam perangkat berbeda lebih dari 10 menit dari jam server. Periksa keabsahan data.') : ''}
+  <div class="photos"><div><b>Masuk</b>${absenLines(a.masuk)}</div><div><b>Pulang</b>${absenLines(a.pulang)}</div></div>`, true);
+}
+
+/* =========================================================
+   HALAMAN GURU
+========================================================= */
+PAGES.guru.home = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  S.cfg = await DB.getCfg(); const u = S.user, today = ymd(new Date());
+  const [rec, izin] = await Promise.all([DB.getAbsensi(`${today}_${u.username}`), DB.listIzinUser(u.username)]);
+  const cfg = S.cfg, iz = izinOn(izin, today), pend = izin.filter(i => i.status === 'Menunggu').length;
+  const kerja = cfg ? cfg.hariKerja.includes(new Date().getDay()) : false;
+  let cta = '';
+  if (!cfg) cta = notice('Admin belum mengatur jam dan lokasi absensi.');
+  else if (iz) cta = notice(`Hari ini Anda tercatat <b>${esc(iz.jenis)}</b> (disetujui).`, 'info');
+  else if (!kerja) cta = notice('Hari ini bukan hari kerja.', 'info');
+  else if (!rec) cta = `<button class="btn pri block lg" data-act="nav" data-p="absen">${ic('camera')} Absen Masuk Sekarang</button>`;
+  else if (!rec.pulang) cta = `<button class="btn pri block lg" data-act="nav" data-p="absen">${ic('camera')} Absen Pulang</button>`;
+  else cta = notice('Absensi hari ini sudah lengkap. Terima kasih!', 'ok');
+  v.innerHTML = `${head(`Halo, ${u.nama.split(',')[0]}`, fmtTanggal(today))}
+  <div class="card pad"><div class="grid2">
+    <div><div class="mut sm">Masuk</div><div style="font-size:24px;font-weight:800">${rec ? esc(rec.masuk.waktu) : '--:--'}</div>${rec ? chip(rec.masuk.status) : ''}</div>
+    <div><div class="mut sm">Pulang</div><div style="font-size:24px;font-weight:800">${rec?.pulang ? esc(rec.pulang.waktu) : '--:--'}</div>${rec?.pulang ? chip(rec.pulang.status) : ''}</div>
+  </div></div>
+  ${cta}
+  ${cfg ? `<div class="card pad"><h3 style="margin-bottom:8px">Jadwal &amp; Lokasi</h3><div class="kv"><span>Absen masuk</span><span>${esc(cfg.jamMasukMulai)} – batas ${esc(cfg.jamMasukBatas)}</span><span>Jam pulang</span><span>${esc(cfg.jamPulangMulai)} (ditutup ${esc(cfg.jamPulangAkhir)})</span><span>Lokasi</span><span>${esc(cfg.namaLokasi)} · radius ${cfg.radius} m</span><span>Hari kerja</span><span>${cfg.hariKerja.map(d => HARI[d].slice(0, 3)).join(', ')}</span></div></div>` : ''}
+  ${pend ? `<div class="card pad" style="cursor:pointer" data-act="nav" data-p="izin">${chip('Menunggu')} Anda punya ${pend} pengajuan izin yang menunggu persetujuan.</div>` : ''}`;
+};
+
+let A = {};
+PAGES.guru.absen = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  S.cfg = await DB.getCfg(); const u = S.user, today = ymd(new Date());
+  const [rec, izin] = await Promise.all([DB.getAbsensi(`${today}_${u.username}`), DB.listIzinUser(u.username)]);
+  const cfg = S.cfg;
+  if (!cfg) { v.innerHTML = head('Absen') + notice('Admin belum mengatur jam dan lokasi absensi.'); return; }
+  if (!cfg.hariKerja.includes(new Date().getDay())) { v.innerHTML = head('Absen') + notice('Hari ini bukan hari kerja.', 'info'); return; }
+  const iz = izinOn(izin, today);
+  if (iz) { v.innerHTML = head('Absen') + notice(`Hari ini Anda tercatat <b>${esc(iz.jenis)}</b> (disetujui), tidak perlu absen.`, 'info'); return; }
+  const mode = !rec ? 'masuk' : (!rec.pulang ? 'pulang' : 'selesai');
+  if (mode === 'selesai') { v.innerHTML = head('Absen') + notice('Absensi hari ini sudah lengkap (masuk dan pulang).', 'ok') + `<div class="card pad"><div class="photos"><div><b>Masuk</b>${absenLines(rec.masuk)}</div><div><b>Pulang</b>${absenLines(rec.pulang)}</div></div></div>`; return; }
+  A = { mode, pos: null, foto: null, jarak: null, sending: false };
+  v.innerHTML = `${head(mode === 'masuk' ? 'Absen Masuk' : 'Absen Pulang', 'Pastikan Anda berada di lokasi sekolah')}
+  <div class="card pad center"><div class="clock" id="clk">--:--:--</div><div class="mut sm">${fmtTanggal(today)}</div><div class="sm" id="winInfo" style="margin-top:6px"></div></div>
+  <div class="card pad"><h3 style="margin-bottom:10px">1. Verifikasi Lokasi</h3><div id="locBox"></div><button class="btn block" data-act="getLoc">${ic('gps')} Perbarui Lokasi</button></div>
+  <div class="card pad"><h3 style="margin-bottom:10px">2. Foto Selfie</h3>
+    <div class="camwrap"><video id="cam" playsinline muted hidden></video><img id="shot" alt="Hasil selfie" hidden><div class="camph" id="camPh">${ic('camera')}<div>Kamera belum aktif</div></div></div>
+    <div id="camBtns"></div></div>
+  <button class="btn pri block lg" id="btnSend" data-act="sendAbsen" disabled>${ic('check')} Kirim Absen ${mode === 'masuk' ? 'Masuk' : 'Pulang'}</button>`;
+  camUI('idle');
+  const tick = () => {
+    const d = new Date(); const c = $('#clk'); if (!c) return;
+    c.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    const w = windowState(mode, cfg, d); $('#winInfo').innerHTML = w.open ? `<span style="color:var(--ok)">${esc(w.msg)}</span>` : `<span style="color:var(--err);font-weight:700">${esc(w.msg)}</span>`;
+    updateSend();
+  };
+  tick(); const iv = setInterval(tick, 1000); onLeave(() => { clearInterval(iv); stopCam(); });
+  actions.getLoc();
+};
+
+function camUI(st) {
+  const b = $('#camBtns'); if (!b) return;
+  $('#cam').hidden = st !== 'live'; $('#shot').hidden = st !== 'done'; $('#camPh').hidden = st !== 'idle';
+  b.innerHTML = st === 'live' ? `<button class="btn pri block" data-act="camSnap">${ic('camera')} Ambil Foto</button>`
+    : st === 'done' ? `<button class="btn block" data-act="camOpen">${ic('refresh')} Ulangi Foto</button>`
+      : `<button class="btn pri block" data-act="camOpen">${ic('camera')} Buka Kamera</button>`;
+}
+function updateSend() {
+  const b = $('#btnSend'); if (!b || !S.cfg) return;
+  const ok = A.pos && A.jarak <= S.cfg.radius && A.foto && windowState(A.mode, S.cfg).open && !A.sending;
+  b.disabled = !ok;
+}
+actions.camOpen = async () => {
+  A.foto = null; updateSend();
+  try { await startCam(); camUI('live'); }
+  catch (e) { camUI('idle'); toast(e.name === 'NotAllowedError' ? 'Izin kamera ditolak. Aktifkan izin kamera di browser.' : errMsg(e), 'err'); }
+};
+actions.camSnap = () => {
+  A.foto = snapPhoto(); $('#shot').src = A.foto; stopCam(); camUI('done'); updateSend();
+};
+actions.getLoc = async () => {
+  const box = $('#locBox'); if (!box) return;
+  box.innerHTML = `<div class="loc"><div class="spin" style="width:24px;height:24px;border-width:3px"></div><div>Mencari lokasi…</div></div>`;
+  A.pos = null; A.jarak = null; updateSend();
+  try {
+    const p = await getPos(), cfg = S.cfg;
+    A.pos = p; A.jarak = jarakM(p.latitude, p.longitude, cfg.lat, cfg.lng);
+    const ok = A.jarak <= cfg.radius;
+    box.innerHTML = `<div class="loc ${ok ? 'ok' : 'bad'}">${ic('pin')}<div><b>${ok ? 'Anda berada di area absensi' : 'Anda di luar area absensi'}</b><div class="sm">Jarak ${fmtJarak(A.jarak)} dari ${esc(cfg.namaLokasi)} (maks. ${cfg.radius} m) · akurasi ±${Math.round(p.accuracy)} m</div></div></div>
+    ${!ok && IS_PREVIEW ? `<button class="btn s" style="margin-bottom:10px" data-act="demoSetLoc">Demo: jadikan posisi saya sebagai lokasi sekolah</button>` : ''}`;
+  } catch (e) { box.innerHTML = `<div class="loc bad">${ic('alert')}<div>${esc(e.message)}</div></div>`; }
+  updateSend();
+};
+actions.demoSetLoc = async () => {
+  if (!IS_PREVIEW || !A.pos) return;
+  S.cfg = { ...cfgOrDefault(), lat: A.pos.latitude, lng: A.pos.longitude }; await DB.saveCfg(S.cfg); await actions.getLoc();
+};
+actions.sendAbsen = async () => {
+  if (A.sending) return;
+  const cfg = S.cfg, u = S.user, now = new Date(), today = ymd(now), mins = now.getHours() * 60 + now.getMinutes();
+  const w = windowState(A.mode, cfg, now); if (!w.open) return toast(w.msg, 'err');
+  if (!A.pos || A.jarak > cfg.radius) return toast('Anda berada di luar area absensi.', 'err');
+  if (!A.foto) return toast('Ambil foto selfie terlebih dahulu.', 'err');
+  A.sending = true; updateSend(); busy(true);
+  try {
+    const id = `${today}_${u.username}`, cur = await DB.getAbsensi(id);
+    if (A.mode === 'masuk' && cur) throw new Error('Anda sudah absen masuk hari ini.');
+    if (A.mode === 'pulang' && (!cur || cur.pulang)) throw new Error('Data absen pulang tidak valid atau sudah tercatat.');
+    const rec = { waktu: hm(now), iso: now.toISOString(), lat: +A.pos.latitude.toFixed(6), lng: +A.pos.longitude.toFixed(6), jarak: Math.round(A.jarak), akurasi: Math.round(A.pos.accuracy || 0), status: '', foto: A.foto };
+    if (A.mode === 'masuk') {
+      const late = mins > toMin(cfg.jamMasukBatas) + Number(cfg.toleransiMenit || 0);
+      rec.status = late ? 'Terlambat' : 'Tepat Waktu'; rec.terlambatMenit = late ? mins - toMin(cfg.jamMasukBatas) : 0;
+      await DB.createAbsensi(id, { username: u.username, nama: u.nama, tanggal: today, masuk: rec });
+    } else {
+      rec.status = mins < toMin(cfg.jamPulangMulai) ? 'Pulang Cepat' : 'Tepat Waktu';
+      await DB.updateAbsensi(id, { pulang: rec });
+    }
+    stopCam();
+    modal('Absen Berhasil', `<div class="center"><div style="font-size:44px;color:var(--ok)">✓</div><h3>Absen ${A.mode === 'masuk' ? 'masuk' : 'pulang'} tercatat</h3><p class="mut" style="margin:6px 0 10px">Pukul ${esc(rec.waktu)} · ${chip(rec.status)}</p><button class="btn pri block" data-act="doneAbsen">Selesai</button></div>`);
+  } catch (e) { toast(errMsg(e), 'err'); }
+  finally { A.sending = false; busy(false); updateSend(); }
+};
+actions.doneAbsen = () => { closeModal(); go('home'); };
+
+/* ---- Izin guru ---- */
+const JENIS_IZIN = ['Izin', 'Sakit', 'Cuti', 'Dinas Luar', 'Lainnya'];
+PAGES.guru.izin = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  const list = (await DB.listIzinUser(S.user.username)).sort((a, b) => b.id.localeCompare(a.id));
+  v.innerHTML = `${head('Pengajuan Izin', 'Ajukan izin, sakit, cuti, atau dinas luar')}
+  <button class="btn pri block" style="margin-bottom:14px" data-act="izinForm">${ic('plus')} Ajukan Izin Baru</button>
+  <div class="card">${list.length ? list.map(i => `<div class="row tap" data-act="izinDetail" data-id="${esc(i.id)}"><div class="g"><b>${esc(i.jenis)} · ${esc(fmtPendek(i.tglMulai))}${i.tglSelesai !== i.tglMulai ? ' – ' + esc(fmtPendek(i.tglSelesai)) : ''}</b><span>${esc(i.alasan)}</span></div><div class="r">${chip(i.status)}</div></div>`).join('') : emptyBox('Belum ada pengajuan.', 'file')}</div>`;
+  S.izinList = list;
+};
+actions.izinForm = () => {
+  const t = ymd(new Date());
+  modal('Ajukan Izin', `<form data-form="izinSubmit">
+    <label class="f">Jenis</label><select class="inp" name="jenis">${JENIS_IZIN.map(j => `<option>${j}</option>`).join('')}</select>
+    <div class="grid2"><div><label class="f">Tanggal mulai</label><input class="inp" type="date" name="mulai" value="${t}" required></div><div><label class="f">Tanggal selesai</label><input class="inp" type="date" name="selesai" value="${t}" required></div></div>
+    <label class="f">Alasan</label><textarea class="inp" name="alasan" maxlength="500" required placeholder="Jelaskan alasan pengajuan"></textarea>
+    <label class="f">Lampiran foto (opsional, mis. surat dokter)</label><input class="inp" type="file" name="lampiran" accept="image/*">
+    <button class="btn pri block lg" style="margin-top:16px">${ic('check')} Kirim Pengajuan</button></form>`);
+};
+forms.izinSubmit = async f => {
+  const mulai = f.mulai.value, selesai = f.selesai.value, alasan = f.alasan.value.trim();
+  if (selesai < mulai) return toast('Tanggal selesai tidak boleh sebelum tanggal mulai.', 'err');
+  if (!alasan) return toast('Alasan wajib diisi.', 'err');
+  busy(true);
+  try {
+    let lampiran = ''; const file = f.lampiran.files[0];
+    if (file) lampiran = await compressFile(file, 900, 0.6, false);
+    const id = String(Date.now());
+    await DB.addIzin(S.user.username, id, { username: S.user.username, nama: S.user.nama, jenis: f.jenis.value, tglMulai: mulai, tglSelesai: selesai, alasan, lampiran, status: 'Menunggu', catatan: '', createdAt: new Date().toISOString() });
+    closeModal(); toast('Pengajuan terkirim.'); go('izin');
+  } finally { busy(false); }
+};
+actions.izinDetail = t => {
+  const i = (S.izinList || []).find(x => x.id === t.dataset.id); if (!i) return;
+  modal('Detail Pengajuan', `<div class="kv"><span>Jenis</span><span>${esc(i.jenis)}</span><span>Tanggal</span><span>${esc(fmtPendek(i.tglMulai))} – ${esc(fmtPendek(i.tglSelesai))}</span><span>Status</span><span>${chip(i.status)}</span><span>Alasan</span><span>${esc(i.alasan)}</span>${i.catatan ? `<span>Catatan admin</span><span>${esc(i.catatan)}</span>` : ''}</div>
+  ${i.lampiran ? `<img src="${esc(i.lampiran)}" alt="Lampiran" style="width:100%;border-radius:12px;margin-top:8px">` : ''}
+  ${i.status === 'Menunggu' ? `<button class="btn danger block" style="margin-top:14px" data-act="izinCancel" data-id="${esc(i.id)}">${ic('trash')} Batalkan Pengajuan</button>` : ''}`);
+};
+actions.izinCancel = async t => {
+  if (!(await confirmBox('Batalkan pengajuan ini?', 'Batalkan'))) return;
+  busy(true); try { await DB.cancelIzin(S.user.username, t.dataset.id); } finally { busy(false); }
+  toast('Pengajuan dibatalkan.'); go('izin');
+};
+
+/* ---- Riwayat guru ---- */
+PAGES.guru.riwayat = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  S.cfg = await DB.getCfg(); const cfg = cfgOrDefault(), u = S.user;
+  const m = S.riwMonth || ymd(new Date()).slice(0, 7), today = ymd(new Date());
+  const [y, mo] = m.split('-').map(Number), last = new Date(y, mo, 0).getDate(), days = [];
+  for (let d = 1; d <= last; d++) { const ds = `${m}-${pad(d)}`; if (ds > today) break; days.push(ds); }
+  const [docs, izin] = await Promise.all([Promise.all(days.map(ds => DB.getAbsensi(`${ds}_${u.username}`))), DB.listIzinUser(u.username)]);
+  const start = u.createdAt || '0000-00-00', rows = [], sum = { tepat: 0, telat: 0, izin: 0, alpa: 0 };
+  days.forEach((ds, i) => {
+    const rec = docs[i], iz = izinOn(izin, ds), kerja = cfg.hariKerja.includes(new Date(ds + 'T00:00:00').getDay());
+    let st = null;
+    if (rec) { st = rec.masuk.status; st === 'Terlambat' ? sum.telat++ : sum.tepat++; }
+    else if (iz) { st = iz.jenis; sum.izin++; }
+    else if (kerja && ds < today && ds >= start) { st = 'Tidak Absen'; sum.alpa++; }
+    else if (kerja && ds === today) st = 'Belum Absen';
+    if (st) rows.push({ ds, rec, st });
+  });
+  rows.reverse(); S.riwRows = rows;
+  v.innerHTML = `${head('Riwayat Absensi')}
+  <input class="inp" type="month" value="${m}" max="${today.slice(0, 7)}" data-change="riwMonth" style="margin-bottom:14px">
+  <div class="stats"><div class="card stat"><b>${sum.tepat}</b><span>Tepat waktu</span></div><div class="card stat"><b>${sum.telat}</b><span>Terlambat</span></div><div class="card stat"><b>${sum.izin}</b><span>Izin/Sakit/Cuti</span></div><div class="card stat"><b>${sum.alpa}</b><span>Tidak absen</span></div></div>
+  <div class="card">${rows.length ? rows.map(r => `<div class="row ${r.rec ? 'tap' : ''}" ${r.rec ? `data-act="riwDetail" data-ds="${r.ds}"` : ''}><div class="g"><b>${esc(fmtTanggal(r.ds))}</b><span>${r.rec ? `Masuk ${esc(r.rec.masuk.waktu)}${r.rec.pulang ? ' · Pulang ' + esc(r.rec.pulang.waktu) : ' · Belum pulang'}` : '—'}</span></div><div class="r">${chip(r.st)}</div></div>`).join('') : emptyBox('Belum ada data pada bulan ini.', 'clock')}</div>`;
+};
+changes.riwMonth = t => { S.riwMonth = t.value || null; go('riwayat'); };
+actions.riwDetail = t => { const r = (S.riwRows || []).find(x => x.ds === t.dataset.ds); if (r?.rec) showAbsen(r.rec); };
+
+/* ---- Profil guru ---- */
+PAGES.guru.profil = async () => {
+  const u = S.user;
+  $('#view').innerHTML = `${head('Profil')}
+  <div class="card pad"><div style="display:flex;gap:14px;align-items:center"><div class="av" style="width:56px;height:56px;font-size:18px">${esc(initials(u.nama))}</div><div><b style="font-size:17px">${esc(u.nama)}</b><div class="mut sm">Username: ${esc(u.username)}${u.nip ? ' · NIP ' + esc(u.nip) : ''}</div></div></div></div>
+  <div class="card pad"><h3>Ganti Password</h3><form data-form="gantiPass">
+    <label class="f">Password lama</label><input class="inp" type="password" name="lama" autocomplete="current-password" required>
+    <label class="f">Password baru (min. 6 karakter)</label><input class="inp" type="password" name="baru" minlength="6" autocomplete="new-password" required>
+    <label class="f">Ulangi password baru</label><input class="inp" type="password" name="ulang" minlength="6" autocomplete="new-password" required>
+    <button class="btn pri block" style="margin-top:14px">${ic('key')} Simpan Password</button></form></div>
+  <button class="btn danger block" data-act="logout">${ic('logout')} Keluar</button>`;
+};
+forms.gantiPass = async f => {
+  if (f.baru.value !== f.ulang.value) return toast('Konfirmasi password tidak sama.', 'err');
+  if (f.baru.value.length < 6) return toast('Password baru minimal 6 karakter.', 'err');
+  busy(true);
+  try {
+    const u = S.user, oh = await hashPass(u.username, f.lama.value), cur = await DB.getUser(u.username);
+    if (!cur || cur.passHash !== oh) throw new Error('Password lama salah.');
+    const nh = await hashPass(u.username, f.baru.value);
+    await DB.changePass(u.username, nh, oh); S.user.passHash = nh; f.reset(); toast('Password berhasil diubah.');
+  } finally { busy(false); }
+};
+
+/* =========================================================
+   HALAMAN ADMIN
+========================================================= */
+PAGES.admin.dash = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  const today = ymd(new Date());
+  const [users, abs, izin] = await Promise.all([DB.listUsers(), DB.listAbsensi(today, today), DB.listIzinAll()]);
+  const guru = users.filter(u => u.aktif !== false), cfg = cfgOrDefault(), kerja = cfg.hariKerja.includes(new Date().getDay());
+  const by = Object.fromEntries(abs.map(a => [a.username, a]));
+  const izSet = new Set(izin.filter(i => i.status === 'Disetujui' && i.tglMulai <= today && today <= i.tglSelesai).map(i => i.username));
+  const hadir = guru.filter(u => by[u.username]), telat = hadir.filter(u => by[u.username].masuk.status === 'Terlambat').length;
+  const izinN = guru.filter(u => !by[u.username] && izSet.has(u.username)).length;
+  const belum = guru.filter(u => !by[u.username] && !izSet.has(u.username));
+  const pend = izin.filter(i => i.status === 'Menunggu').length;
+  v.innerHTML = `${head('Dashboard', fmtTanggal(today))}
+  ${!S.cfg ? notice('Jam dan lokasi absensi belum disimpan. Buka menu <b>Pengaturan</b> untuk mengaturnya.') : ''}
+  ${!kerja ? notice('Hari ini bukan hari kerja.', 'info') : ''}
+  <div class="stats"><div class="card stat"><b>${guru.length}</b><span>Guru aktif</span></div><div class="card stat"><b style="color:var(--ok)">${hadir.length}</b><span>Sudah absen (${telat} terlambat)</span></div><div class="card stat"><b style="color:var(--info)">${izinN}</b><span>Izin/Sakit/Cuti</span></div><div class="card stat"><b style="color:var(--err)">${kerja ? belum.length : 0}</b><span>Belum absen</span></div></div>
+  ${pend ? `<div class="card pad" style="cursor:pointer" data-act="nav" data-p="izin">${chip('Menunggu')} ${pend} pengajuan izin menunggu keputusan Anda.</div>` : ''}
+  <div class="card"><div class="pad" style="padding-bottom:4px"><h3>Absensi Hari Ini</h3></div>${abs.length ? abs.sort((a, b) => a.masuk.waktu.localeCompare(b.masuk.waktu)).map(a => `<div class="row tap" data-act="dashDetail" data-id="${esc(a.id)}"><div class="av">${esc(initials(a.nama))}</div><div class="g"><b>${esc(a.nama)}</b><span>Masuk ${esc(a.masuk.waktu)}${a.pulang ? ' · Pulang ' + esc(a.pulang.waktu) : ''}</span></div><div class="r">${chip(a.masuk.status)}</div></div>`).join('') : emptyBox('Belum ada guru yang absen hari ini.', 'clock')}</div>
+  ${kerja && belum.length ? `<div class="card"><div class="pad" style="padding-bottom:4px"><h3>Belum Absen</h3></div>${belum.map(u => `<div class="row"><div class="av">${esc(initials(u.nama))}</div><div class="g"><b>${esc(u.nama)}</b><span>${esc(u.username)}</span></div></div>`).join('')}</div>` : ''}`;
+  S.dashAbs = abs;
+};
+actions.dashDetail = t => { const a = (S.dashAbs || []).find(x => x.id === t.dataset.id); if (a) showAbsen(a); };
+
+/* ---- Rekap ---- */
+PAGES.admin.rekap = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  const now = new Date(), users = (await DB.listUsers()).sort((a, b) => a.nama.localeCompare(b.nama));
+  S.rekap = S.rekap || { from: ymd(new Date(now.getFullYear(), now.getMonth(), 1)), to: ymd(now), guru: '', status: '' };
+  const r = S.rekap;
+  v.innerHTML = `${head('Rekap Absensi')}
+  <div class="card pad"><form data-form="rekapCari" class="filters">
+    <div><label class="f" style="margin-top:0">Dari</label><input class="inp" type="date" name="from" value="${r.from}" required></div>
+    <div><label class="f" style="margin-top:0">Sampai</label><input class="inp" type="date" name="to" value="${r.to}" required></div>
+    <div><label class="f" style="margin-top:0">Guru</label><select class="inp" name="guru"><option value="">Semua guru</option>${users.map(u => `<option value="${esc(u.username)}" ${r.guru === u.username ? 'selected' : ''}>${esc(u.nama)}</option>`).join('')}</select></div>
+    <div><label class="f" style="margin-top:0">Status masuk</label><select class="inp" name="status"><option value="">Semua</option><option ${r.status === 'Tepat Waktu' ? 'selected' : ''}>Tepat Waktu</option><option ${r.status === 'Terlambat' ? 'selected' : ''}>Terlambat</option></select></div>
+    <button class="btn pri">${ic('list')} Tampilkan</button></form></div>
+  <div id="rekapOut">${loading()}</div>`;
+  await loadRekap();
+};
+async function loadRekap() {
+  const r = S.rekap, out = $('#rekapOut'); if (!out) return;
+  let rows = await DB.listAbsensi(r.from, r.to);
+  if (r.guru) rows = rows.filter(a => a.username === r.guru);
+  if (r.status) rows = rows.filter(a => a.masuk.status === r.status);
+  rows.sort((a, b) => b.tanggal.localeCompare(a.tanggal) || a.nama.localeCompare(b.nama));
+  S.rekapRows = rows;
+  const tepat = rows.filter(a => a.masuk.status === 'Tepat Waktu').length;
+  out.innerHTML = `<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap"><div class="mut sm">${rows.length} data · ${tepat} tepat waktu · ${rows.length - tepat} terlambat</div><button class="btn s" data-act="rekapCsv" ${rows.length ? '' : 'disabled'}>${ic('download')} Ekspor CSV</button></div>
+  <div class="card">${rows.length ? rows.map(a => {
+    const sv = srvDate(a.waktuServer), dv = a.masuk.iso ? new Date(a.masuk.iso) : null, warn = sv && dv && Math.abs(sv - dv) > 10 * 60000;
+    return `<div class="row tap" data-act="rekapDetail" data-id="${esc(a.id)}">${a.masuk.foto ? `<img class="thumb" src="${esc(a.masuk.foto)}" alt="">` : `<div class="av">${esc(initials(a.nama))}</div>`}<div class="g"><b>${esc(a.nama)}</b><span>${esc(fmtPendek(a.tanggal))} · Masuk ${esc(a.masuk.waktu)}${a.pulang ? ' · Pulang ' + esc(a.pulang.waktu) : ''}</span></div><div class="r">${chip(a.masuk.status)}${a.pulang && a.pulang.status !== 'Tepat Waktu' ? chip(a.pulang.status) : ''}${warn ? '<span class="chip err">Jam perangkat beda</span>' : ''}</div></div>`;
+  }).join('') : emptyBox('Tidak ada data pada filter ini.', 'list')}</div>`;
+}
+forms.rekapCari = async f => {
+  if (f.to.value < f.from.value) return toast('Tanggal akhir tidak boleh sebelum tanggal awal.', 'err');
+  S.rekap = { from: f.from.value, to: f.to.value, guru: f.guru.value, status: f.status.value };
+  $('#rekapOut').innerHTML = loading(); await loadRekap();
+};
+actions.rekapDetail = t => { const a = (S.rekapRows || []).find(x => x.id === t.dataset.id); if (a) showAbsen(a); };
+actions.rekapCsv = () => {
+  const q = s => `"${String(s ?? '').replace(/"/g, '""')}"`;
+  const head_ = ['Tanggal', 'Username', 'Nama', 'Jam Masuk', 'Status Masuk', 'Jarak Masuk (m)', 'Lat Masuk', 'Lng Masuk', 'Jam Pulang', 'Status Pulang', 'Jarak Pulang (m)', 'Lat Pulang', 'Lng Pulang'];
+  const lines = (S.rekapRows || []).map(a => [a.tanggal, a.username, a.nama, a.masuk.waktu, a.masuk.status, a.masuk.jarak, a.masuk.lat, a.masuk.lng, a.pulang?.waktu, a.pulang?.status, a.pulang?.jarak, a.pulang?.lat, a.pulang?.lng].map(q).join(';'));
+  download(`rekap-absensi_${S.rekap.from}_${S.rekap.to}.csv`, [head_.map(q).join(';'), ...lines].join('\r\n'));
+};
+
+/* ---- Pengajuan izin (admin) ---- */
+PAGES.admin.izin = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  const all = (await DB.listIzinAll()).sort((a, b) => (b.createdAt || b.id).localeCompare(a.createdAt || a.id));
+  const f = S.izinFilter, list = f ? all.filter(i => i.status === f) : all;
+  S.izinAll = all;
+  v.innerHTML = `${head('Pengajuan Izin', 'Setujui atau tolak izin, sakit, dan cuti guru')}
+  <div class="tabs">${['Menunggu', 'Disetujui', 'Ditolak', ''].map(s => `<button class="${f === s ? 'on' : ''}" data-act="izinFilter" data-s="${s}">${s || 'Semua'}${s ? ` (${all.filter(i => i.status === s).length})` : ''}</button>`).join('')}</div>
+  <div class="card">${list.length ? list.map(i => `<div class="row tap" data-act="izinReview" data-u="${esc(i.username)}" data-id="${esc(i.id)}"><div class="av">${esc(initials(i.nama))}</div><div class="g"><b>${esc(i.nama)}</b><span>${esc(i.jenis)} · ${esc(fmtPendek(i.tglMulai))}${i.tglSelesai !== i.tglMulai ? ' – ' + esc(fmtPendek(i.tglSelesai)) : ''}</span></div><div class="r">${chip(i.status)}</div></div>`).join('') : emptyBox('Tidak ada pengajuan.', 'file')}</div>`;
+};
+actions.izinFilter = t => { S.izinFilter = t.dataset.s; go('izin'); };
+actions.izinReview = t => {
+  const i = (S.izinAll || []).find(x => x.id === t.dataset.id && x.username === t.dataset.u); if (!i) return;
+  modal('Tinjau Pengajuan', `<div class="kv"><span>Guru</span><span><b>${esc(i.nama)}</b></span><span>Jenis</span><span>${esc(i.jenis)}</span><span>Tanggal</span><span>${esc(fmtPendek(i.tglMulai))} – ${esc(fmtPendek(i.tglSelesai))}</span><span>Status</span><span>${chip(i.status)}</span><span>Alasan</span><span>${esc(i.alasan)}</span></div>
+  ${i.lampiran ? `<img src="${esc(i.lampiran)}" alt="Lampiran" style="width:100%;border-radius:12px;margin:8px 0">` : '<p class="mut sm">Tanpa lampiran.</p>'}
+  <form data-form="izinDecide" data-u="${esc(i.username)}" data-id="${esc(i.id)}"><label class="f">Catatan untuk guru (opsional)</label><textarea class="inp" name="catatan" maxlength="300">${esc(i.catatan || '')}</textarea>
+  <div class="grid2" style="margin-top:14px"><button class="btn danger" type="submit" name="act" value="Ditolak">${ic('x')} Tolak</button><button class="btn ok" type="submit" name="act" value="Disetujui">${ic('check')} Setujui</button></div></form>`);
+  // tombol submit menyimpan keputusan ke atribut form
+  $$('#modal form button[name=act]').forEach(b => b.addEventListener('click', () => { b.form.dataset.decision = b.value; }));
+};
+forms.izinDecide = async f => {
+  const status = f.dataset.decision; if (!status) return;
+  busy(true);
+  try { await DB.setIzinStatus(f.dataset.u, f.dataset.id, status, f.catatan.value.trim()); } finally { busy(false); }
+  closeModal(); toast(`Pengajuan ${status.toLowerCase()}.`); go('izin');
+};
+
+/* ---- Data guru ---- */
+PAGES.admin.guru = async () => {
+  const v = $('#view'); v.innerHTML = loading();
+  const users = (await DB.listUsers()).sort((a, b) => a.nama.localeCompare(b.nama)); S.guruList = users;
+  v.innerHTML = `${head('Data Guru', `${users.length} akun terdaftar`)}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button class="btn pri" data-act="guruAdd">${ic('plus')} Tambah Guru</button><label class="btn" style="cursor:pointer">${ic('upload')} Impor CSV<input type="file" accept=".csv,text/csv,text/plain" data-change="csvImport" hidden></label><button class="btn" data-act="csvTemplate">${ic('download')} Template CSV</button></div>
+  <input class="inp" id="guruQ" placeholder="Cari nama atau username…" style="margin-bottom:12px">
+  <div class="card" id="guruList"></div>`;
+  const draw = () => {
+    const q = $('#guruQ').value.trim().toLowerCase();
+    const list = users.filter(u => !q || u.nama.toLowerCase().includes(q) || u.username.includes(q));
+    $('#guruList').innerHTML = list.length ? list.map(u => `<div class="row tap" data-act="guruEdit" data-u="${esc(u.username)}"><div class="av">${esc(initials(u.nama))}</div><div class="g"><b>${esc(u.nama)}</b><span>${esc(u.username)}${u.nip ? ' · ' + esc(u.nip) : ''}</span></div><div class="r">${u.aktif === false ? '<span class="chip mut">Nonaktif</span>' : '<span class="chip ok">Aktif</span>'}</div></div>`).join('') : emptyBox('Belum ada data guru. Tambahkan guru atau impor dari CSV.', 'users');
+  };
+  $('#guruQ').addEventListener('input', draw); draw();
+};
+actions.guruAdd = () => modal('Tambah Guru', `<form data-form="guruNew">
+  <label class="f">Username (huruf kecil, angka, titik, strip)</label><input class="inp" name="username" pattern="[a-z0-9._\\-]{3,30}" autocapitalize="none" required>
+  <label class="f">Nama lengkap</label><input class="inp" name="nama" required>
+  <label class="f">NIP (opsional)</label><input class="inp" name="nip" inputmode="numeric">
+  <label class="f">Password awal (min. 6 karakter)</label><input class="inp" name="password" minlength="6" required>
+  <button class="btn pri block lg" style="margin-top:16px">Simpan</button></form>`);
+forms.guruNew = async f => {
+  const u = f.username.value.trim().toLowerCase();
+  if (!/^[a-z0-9._-]{3,30}$/.test(u)) return toast('Username tidak valid.', 'err');
+  busy(true);
+  try {
+    if (await DB.getUser(u)) throw new Error('Username sudah dipakai.');
+    await DB.saveUser(u, { username: u, nama: f.nama.value.trim(), nip: f.nip.value.trim(), passHash: await hashPass(u, f.password.value), aktif: true, role: 'guru', createdAt: ymd(new Date()) });
+    closeModal(); toast('Guru ditambahkan.'); go('guru');
+  } finally { busy(false); }
+};
+actions.guruEdit = t => {
+  const u = (S.guruList || []).find(x => x.username === t.dataset.u); if (!u) return;
+  modal('Ubah Data Guru', `<form data-form="guruSave" data-u="${esc(u.username)}">
+  <label class="f">Username</label><input class="inp" value="${esc(u.username)}" disabled>
+  <label class="f">Nama lengkap</label><input class="inp" name="nama" value="${esc(u.nama)}" required>
+  <label class="f">NIP</label><input class="inp" name="nip" value="${esc(u.nip || '')}">
+  <label class="f" style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="aktif" ${u.aktif === false ? '' : 'checked'}> Akun aktif</label>
+  <button class="btn pri block" style="margin-top:12px">Simpan Perubahan</button></form>
+  <div class="grid2" style="margin-top:12px"><button class="btn" data-act="guruReset" data-u="${esc(u.username)}">${ic('key')} Reset Password</button><button class="btn danger" data-act="guruDel" data-u="${esc(u.username)}">${ic('trash')} Hapus</button></div>`);
+};
+forms.guruSave = async f => {
+  busy(true);
+  try { await DB.saveUser(f.dataset.u, { nama: f.nama.value.trim(), nip: f.nip.value.trim(), aktif: f.aktif.checked }); } finally { busy(false); }
+  closeModal(); toast('Perubahan disimpan.'); go('guru');
+};
+actions.guruReset = t => modal('Reset Password', `<form data-form="guruPass" data-u="${esc(t.dataset.u)}"><p class="mut sm">Atur password baru untuk <b>${esc(t.dataset.u)}</b>.</p><label class="f">Password baru (min. 6 karakter)</label><input class="inp" name="password" minlength="6" required><button class="btn pri block" style="margin-top:14px">Simpan Password</button></form>`);
+forms.guruPass = async f => {
+  busy(true);
+  try { await DB.saveUser(f.dataset.u, { passHash: await hashPass(f.dataset.u, f.password.value) }); } finally { busy(false); }
+  closeModal(); toast('Password diperbarui.');
+};
+actions.guruDel = async t => {
+  if (!(await confirmBox(`Hapus akun ${t.dataset.u}? Data absensi yang sudah tercatat tetap tersimpan.`, 'Hapus'))) return;
+  busy(true); try { await DB.deleteUser(t.dataset.u); } finally { busy(false); }
+  toast('Akun dihapus.'); go('guru');
+};
+actions.csvTemplate = () => download('template-guru.csv', 'username,nama,nip,password\r\nguru.contoh,Nama Guru Contoh,198001012005011001,rahasia123');
+changes.csvImport = async t => {
+  const file = t.files[0]; if (!file) return;
+  const txt = await file.text(); t.value = '';
+  const lines = txt.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim());
+  if (!lines.length) return toast('File CSV kosong.', 'err');
+  const sep = lines[0].includes(';') && !lines[0].includes(',') ? ';' : ',';
+  const rows = lines.map(l => l.split(sep).map(c => c.trim().replace(/^"|"$/g, '')));
+  if (/^username$/i.test(rows[0][0])) rows.shift();
+  busy(true); let ok = 0, skip = 0;
+  try {
+    for (const [un, nama, nip, pass] of rows) {
+      const u = (un || '').toLowerCase();
+      if (!/^[a-z0-9._-]{3,30}$/.test(u) || !nama || !pass || pass.length < 6 || await DB.getUser(u)) { skip++; continue; }
+      await DB.saveUser(u, { username: u, nama, nip: nip || '', passHash: await hashPass(u, pass), aktif: true, role: 'guru', createdAt: ymd(new Date()) }); ok++;
+    }
+  } finally { busy(false); }
+  toast(`Impor selesai: ${ok} ditambahkan, ${skip} dilewati.`, ok ? 'ok' : 'err'); go('guru');
+};
+
+/* ---- Pengaturan ---- */
+PAGES.admin.setting = async () => {
+  const v = $('#view');
+  v.innerHTML = `${head('Pengaturan')}<div class="tabs">${[['jam', 'Jam Absen'], ['lokasi', 'Lokasi'], ['sekolah', 'Logo & Nama Sekolah']].map(([k, n]) => `<button class="${S.setTab === k ? 'on' : ''}" data-act="setTab" data-t="${k}">${n}</button>`).join('')}</div><div id="setBody"></div>`;
+  const tab = S.setTab;
+  if (tab === 'jam') setJam(); else if (tab === 'lokasi') await setLokasi(); else setSekolah();
+};
+actions.setTab = t => { S.setTab = t.dataset.t; go('setting'); };
+
+function setJam() {
+  const c = cfgOrDefault(), order = [1, 2, 3, 4, 5, 6, 0];
+  $('#setBody').innerHTML = `<div class="card pad"><form data-form="saveJam">
+    <h3>Absen Masuk</h3>
+    <div class="grid2"><div><label class="f">Jam absen masuk dibuka</label><input class="inp" type="time" name="masukMulai" value="${c.jamMasukMulai}" required></div><div><label class="f">Batas tepat waktu</label><input class="inp" type="time" name="masukBatas" value="${c.jamMasukBatas}" required></div></div>
+    <label class="f">Toleransi keterlambatan (menit)</label><input class="inp" type="number" name="toleransi" min="0" max="120" value="${c.toleransiMenit}" required>
+    <h3 style="margin-top:20px">Absen Pulang</h3>
+    <div class="grid2"><div><label class="f">Jam pulang resmi</label><input class="inp" type="time" name="pulangMulai" value="${c.jamPulangMulai}" required></div><div><label class="f">Absen ditutup pukul</label><input class="inp" type="time" name="pulangAkhir" value="${c.jamPulangAkhir}" required></div></div>
+    <p class="mut sm" style="margin-top:6px">Guru yang pulang sebelum jam pulang resmi tercatat "Pulang Cepat". Setelah jam penutupan, absen tidak dapat dilakukan.</p>
+    <h3 style="margin-top:20px">Hari Kerja</h3>
+    <div class="days" style="margin-top:8px">${order.map(d => `<label><input type="checkbox" name="hari" value="${d}" ${c.hariKerja.includes(d) ? 'checked' : ''}> ${HARI[d]}</label>`).join('')}</div>
+    <button class="btn pri block lg" style="margin-top:20px">${ic('check')} Simpan Jam Absen</button></form></div>`;
+}
+forms.saveJam = async f => {
+  const a = f.masukMulai.value, b = f.masukBatas.value, c = f.pulangMulai.value, d = f.pulangAkhir.value;
+  const hari = $$('input[name=hari]:checked', f).map(x => Number(x.value));
+  if (!(a < b && b < c && c < d)) return toast('Urutan jam harus: dibuka < batas tepat waktu < jam pulang < ditutup.', 'err');
+  if (!hari.length) return toast('Pilih minimal satu hari kerja.', 'err');
+  busy(true);
+  try { const n = { ...cfgOrDefault(), jamMasukMulai: a, jamMasukBatas: b, toleransiMenit: Number(f.toleransi.value) || 0, jamPulangMulai: c, jamPulangAkhir: d, hariKerja: hari }; await DB.saveCfg(n); S.cfg = n; } finally { busy(false); }
+  toast('Jam absensi disimpan.');
+};
+
+function loadLeaflet() {
+  if (window.L) return Promise.resolve();
+  return new Promise((res, rej) => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(l);
+    const s = document.createElement('script'); s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; s.onload = res; s.onerror = () => rej(new Error('Peta gagal dimuat')); document.head.appendChild(s);
+  });
+}
+let mapObj = null;
+async function setLokasi() {
+  const c = cfgOrDefault();
+  $('#setBody').innerHTML = `<div class="card pad"><form data-form="saveLokasi" id="fLok">
+    <label class="f" style="margin-top:0">Nama lokasi</label><input class="inp" name="namaLokasi" value="${esc(c.namaLokasi)}" required>
+    <div id="map" class="map"><div class="empty">Memuat peta…</div></div>
+    <p class="mut sm">Klik peta atau geser penanda untuk mengubah posisi sekolah. Lingkaran biru menunjukkan radius absensi.</p>
+    <div class="grid2"><div><label class="f">Latitude</label><input class="inp" name="lat" inputmode="decimal" value="${c.lat}" required></div><div><label class="f">Longitude</label><input class="inp" name="lng" inputmode="decimal" value="${c.lng}" required></div></div>
+    <label class="f">Radius absensi (meter)</label><input class="inp" type="number" name="radius" min="10" max="5000" value="${c.radius}" required>
+    <label class="f">Tempel koordinat dari Google Maps (contoh: -6.2, 106.8)</label><input class="inp" id="pasteLL" placeholder="-6.200000, 106.816666">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" class="btn" data-act="useMyLoc">${ic('gps')} Gunakan lokasi saya sekarang</button><a class="btn" id="gmLink" target="_blank" rel="noopener" href="${mapsUrl(c.lat, c.lng)}">${ic('pin')} Buka di Google Maps</a></div>
+    <button class="btn pri block lg" style="margin-top:18px">${ic('check')} Simpan Lokasi</button></form></div>`;
+  const f = $('#fLok'); let marker, circle;
+  const setPos = (lat, lng, pan = true) => {
+    f.lat.value = (+lat).toFixed(6); f.lng.value = (+lng).toFixed(6); $('#gmLink').href = mapsUrl(f.lat.value, f.lng.value);
+    if (marker) { marker.setLatLng([lat, lng]); circle.setLatLng([lat, lng]); if (pan) mapObj.setView([lat, lng], mapObj.getZoom()); }
+  };
+  window.__setLokasi = setPos;
+  const fromInputs = () => { const la = parseFloat(f.lat.value), lo = parseFloat(f.lng.value); if (isFinite(la) && isFinite(lo)) setPos(la, lo); };
+  f.lat.addEventListener('change', fromInputs); f.lng.addEventListener('change', fromInputs);
+  f.radius.addEventListener('input', () => { if (circle) circle.setRadius(Number(f.radius.value) || 0); });
+  $('#pasteLL').addEventListener('change', e => { const m = e.target.value.match(/(-?\d+(?:\.\d+)?)\s*[,;\s]\s*(-?\d+(?:\.\d+)?)/); if (m) { setPos(+m[1], +m[2]); e.target.value = ''; } else toast('Format koordinat tidak dikenali.', 'err'); });
+  try {
+    await loadLeaflet();
+    if (!$('#map')) return;
+    $('#map').innerHTML = ''; mapObj = L.map('map').setView([c.lat, c.lng], 17);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(mapObj);
+    marker = L.marker([c.lat, c.lng], { draggable: true }).addTo(mapObj);
+    circle = L.circle([c.lat, c.lng], { radius: c.radius, color: '#2563eb', fillOpacity: .12 }).addTo(mapObj);
+    marker.on('dragend', () => { const p = marker.getLatLng(); setPos(p.lat, p.lng, false); circle.setLatLng(p); });
+    mapObj.on('click', e => setPos(e.latlng.lat, e.latlng.lng));
+    onLeave(() => { if (mapObj) { mapObj.remove(); mapObj = null; } });
+  } catch (e) { const m = $('#map'); if (m) m.innerHTML = '<div class="empty">Peta tidak dapat dimuat. Isi koordinat secara manual.</div>'; }
+}
+actions.useMyLoc = async () => {
+  busy(true);
+  try { const p = await getPos(); window.__setLokasi(p.latitude, p.longitude); toast(`Posisi diambil (akurasi ±${Math.round(p.accuracy)} m).`); }
+  catch (e) { toast(e.message, 'err'); } finally { busy(false); }
+};
+forms.saveLokasi = async f => {
+  const lat = parseFloat(f.lat.value), lng = parseFloat(f.lng.value), radius = Number(f.radius.value);
+  if (!(lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180)) return toast('Koordinat tidak valid.', 'err');
+  if (!(radius >= 10 && radius <= 5000)) return toast('Radius harus 10–5000 meter.', 'err');
+  busy(true);
+  try { const n = { ...cfgOrDefault(), lat, lng, radius, namaLokasi: f.namaLokasi.value.trim() || 'Lokasi Sekolah' }; await DB.saveCfg(n); S.cfg = n; } finally { busy(false); }
+  toast('Lokasi absensi disimpan.');
+};
+
+let tmpLogo;
+function setSekolah() {
+  tmpLogo = undefined;
+  $('#setBody').innerHTML = `<div class="card pad"><form data-form="saveSekolah">
+    <p class="mut sm" style="margin-bottom:8px">Logo dan nama sekolah ditampilkan di halaman login serta di header aplikasi.</p>
+    <label class="f">Nama sekolah</label><input class="inp" name="nama" value="${esc(S.sekolah.nama)}" maxlength="80" placeholder="Contoh: SMA Negeri 1 Contoh" required>
+    <label class="f">Logo sekolah</label>
+    <div class="logoprev"><div id="logoPrev">${logoHtml(72)}</div><div style="flex:1"><label class="btn s" style="cursor:pointer">${ic('upload')} Pilih gambar<input type="file" accept="image/*" data-change="logoPick" hidden></label> <button type="button" class="btn s danger" data-act="logoDel">${ic('trash')} Hapus</button><div class="mut sm" style="margin-top:6px">PNG/JPG, otomatis diperkecil ke 256 px.</div></div></div>
+    <button class="btn pri block lg" style="margin-top:14px">${ic('check')} Simpan</button></form></div>`;
+}
+changes.logoPick = async t => {
+  const file = t.files[0]; if (!file) return;
+  busy(true);
+  try { tmpLogo = await compressFile(file, 256, 0.85, /png|svg|webp/i.test(file.type)); $('#logoPrev').innerHTML = `<img class="logo" style="width:72px;height:72px" src="${tmpLogo}" alt="Logo">`; }
+  catch (e) { toast('Gambar tidak dapat dibaca.', 'err'); } finally { busy(false); }
+};
+actions.logoDel = () => { tmpLogo = ''; $('#logoPrev').innerHTML = `<span class="logo ph" style="width:72px;height:72px">${ic('building')}</span>`; };
+forms.saveSekolah = async f => {
+  const d = { nama: f.nama.value.trim(), logo: tmpLogo === undefined ? (S.sekolah.logo || '') : tmpLogo };
+  busy(true);
+  try { await DB.saveSekolah(d); S.sekolah = d; } finally { busy(false); }
+  applyTitle(); renderShell(); go('setting'); toast('Identitas sekolah disimpan.');
+};
+
+/* =========================================================
+   PWA (manifest Data URI + Service Worker dari Blob)
+========================================================= */
+function injectPWA() {
+  try {
+    if (!document.querySelector('link[rel="manifest"]')) {
+      const icon = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#2563eb"/><path d="M256 120a96 96 0 0 0-96 96c0 72 96 176 96 176s96-104 96-176a96 96 0 0 0-96-96zm0 130a34 34 0 1 1 0-68 34 34 0 0 1 0 68z" fill="#fff"/></svg>');
+      const man = { name: 'Absensi Guru', short_name: 'Absensi', start_url: location.href.split('#')[0], display: 'standalone', background_color: '#ffffff', theme_color: '#2563eb', icons: [{ src: icon, sizes: 'any', type: 'image/svg+xml', purpose: 'any' }] };
+      const l = document.createElement('link'); l.rel = 'manifest'; l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(man)); document.head.appendChild(l);
+    }
+    if ('serviceWorker' in navigator) {
+      const code = "self.addEventListener('install',e=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',()=>{});";
+      navigator.serviceWorker.register(URL.createObjectURL(new Blob([code], { type: 'text/javascript' }))).catch(() => { });
+    }
+  } catch (e) { }
+}
+
+/* =========================================================
+   BOOT
+========================================================= */
+(async function boot() {
+  injectPWA();
+  root.innerHTML = loading();
+  try { DB = IS_PREVIEW ? await createMemDB() : await createFsDB(); }
+  catch (e) { root.innerHTML = `<div class="login-wrap"><div class="card pad login-card">${notice('Gagal memuat Firebase: ' + esc(e.message) + '<br>Periksa firebaseConfig dan koneksi internet.')}</div></div>`; return; }
+  try { S.sekolah = { nama: '', logo: '', ...((await DB.getSekolah()) || {}) }; } catch (e) { S.sekolah = { nama: '', logo: '' }; }
+  applyTitle();
+  DB.auth.onChange(async email => {
+    if (email) { S.role = 'admin'; S.user = { email, nama: 'Administrator' }; await enterApp(); }
+    else if (S.role !== 'guru') { S.role = null; S.user = null; renderLogin(); }
+  });
+})();
+</script>
+</body>
+</html>
